@@ -1,0 +1,57 @@
+{
+  "description" : "Create an image for NGINX Controller",
+
+  "builders": [{
+    "type": "azure-arm",
+    "subscription_id": "{{ user `subscription` }}",
+    "temp_compute_name": "{{user `ctrl_host`}}",
+    "managed_image_resource_group_name": "{{ user `buildRG` }}",
+    "managed_image_name": "{{ user `imageName` }}",
+    "os_type": "Linux",
+    "image_publisher": "Canonical",
+    "image_offer": "UbuntuServer",
+    "image_sku": "18.04-LTS",
+    "location": "{{ user `azure_region` }}",
+    "vm_size": "{{ user `ctrl_vm_size` }}"
+  }],
+  
+  "provisioners": [
+  {
+    "type": "file",
+    "source": "{{ user `tarball`}}",
+    "destination": "~/controller-installer.tar.gz"
+  },
+  {
+    "type": "file",
+    "source": "controller_install.sh",
+    "destination": "~/controller_install.sh"
+  },
+  {
+    "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+    "inline": [
+      "apt-get update",
+      "apt-get upgrade -y",
+      "apt-get install -y gawk bash conntrack coreutils curl ebtables gettext ethtool libc-bin grep gzip iproute2 iptables jq less openssl sed socat tar util-linux",
+      "chmod +x ~/controller_install.sh"
+    ],
+    "inline_shebang": "/bin/sh -x",
+    "type": "shell"
+  },
+  {
+    "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} {{ .Path }}",
+    "inline": [
+      "~/controller_install.sh '{{user `ctrl_host`}}.{{ user `azure_region`}}.cloudapp.azure.com' '{{user `ctrl_admin`}}' '{{user `ctrl_passwd`}}'"
+    ],
+    "inline_shebang": "/bin/sh -x",
+    "type": "shell"
+  },
+  {
+    "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+    "inline": [
+      "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"
+    ],
+    "inline_shebang": "/bin/sh -x",
+    "type": "shell"
+  }
+  ]
+}

@@ -1,0 +1,15 @@
+clusters =  2
+nginxs = 2
+controllers = 1
+controller_size = "Standard_D4s_v3"
+nginx_size = "Standard_DS1_v2"
+location = "uksouth"
+prefix = "tux-tf"
+image_rg = "tux-images"
+controller_image = "controller-3.12.1"
+controller_name = "tuxctl"
+nginx_name = "tuxngx"
+fw_ssh_prefixes = [ "8.8.8.8", "4.4.4.4" ]
+fw_service_prefixes = [ "0.0.0.0/0" ]
+admin_user = "nginx"
+admin_ssh_key = "~/.ssh/tf_keys.pub"

@@ -1,0 +1,12 @@
+{
+    "imageName": "nginx-controller-3.13.0-0",
+    "tarball": "/home/tux/controller-installer-3.13.0.tar.gz",
+    "buildRG": "tux_img",
+    "subscription": "444aaaaa-1111-bbbb-1111-111111111111",
+    "azure_region": "uksouth",
+    "ctrl_host": "tuxctl0",
+    "ctrl_admin": "admin@nginx.com",
+    "ctrl_passwd": "Apassword0f$om4k1nD",
+    "ctrl_vm_size": "Standard_D4s_v3"
+}
+
