@@ -19,12 +19,12 @@
   {
     "type": "file",
     "source": "{{ user `tarball`}}",
-    "destination": "~/controller-installer.tar.gz"
+    "destination": "/opt/controller-installer.tar.gz"
   },
   {
     "type": "file",
     "source": "controller_install.sh",
-    "destination": "~/controller_install.sh"
+    "destination": "/opt/controller_install.sh"
   },
   {
     "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
@@ -32,7 +32,7 @@
       "apt-get update",
       "apt-get upgrade -y",
       "apt-get install -y gawk bash conntrack coreutils curl ebtables gettext ethtool libc-bin grep gzip iproute2 iptables jq less openssl sed socat tar util-linux",
-      "chmod +x ~/controller_install.sh"
+      "chmod +x /opt/controller_install.sh"
     ],
     "inline_shebang": "/bin/sh -x",
     "type": "shell"
@@ -40,7 +40,7 @@
   {
     "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} {{ .Path }}",
     "inline": [
-      "~/controller_install.sh '{{user `ctrl_host`}}.{{ user `azure_region`}}.cloudapp.azure.com' '{{user `ctrl_admin`}}' '{{user `ctrl_passwd`}}'"
+      "[ '{{ user `full_build` }}' == 'true' ] && /opt/controller_install.sh '{{user `ctrl_host`}}.{{ user `azure_region`}}.cloudapp.azure.com' '{{user `ctrl_admin`}}' '{{user `ctrl_passwd`}}'"
     ],
     "inline_shebang": "/bin/sh -x",
     "type": "shell"

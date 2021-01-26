@@ -65,3 +65,19 @@ variable "admin_user" {
 variable "admin_ssh_key" {
   description = "The SSH key for the admin_user"
 }
+
+variable "install_needed" {
+  description = "Does Terraform need to run the controller installer during first boot?"
+  default = "false"
+}
+
+variable "controller_admin_user" {
+  description = "The admin user email address. Only needed if install_needed is true"
+  default = "ChangeMeIfInstallNeededIsTrue"
+}
+
+variable "controller_admin_pass" {
+  description = "The admin user password. Only needed if install_needed is true"
+  default = "ChangeMeIfInstallNeededIsTrue"
+}
+
