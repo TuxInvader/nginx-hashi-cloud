@@ -71,13 +71,13 @@ resource "azurerm_linux_virtual_machine" "ctrl-vm" {
   computer_name         = "${var.controller_name}${count.index}"
   custom_data           = base64encode( 
     templatefile( "controller_custom_data.init", { 
-      "install_needed": "${var.install_needed}"
+      "install_needed": var.install_needed
       "hostname": "${var.controller_name}${count.index}"
       "domain": "${var.location}.cloudapp.azure.com"
       "ipaddr": azurerm_network_interface.ctrl-mgmnt-nics[count.index].private_ip_address
       "username": var.admin_user
-      "controller_admin_user": "${var.controller_admin_user}"
-      "controller_admin_pass": "${var.controller_admin_pass}"
+      "controller_admin_user": var.controller_admin_user
+      "controller_admin_pass": var.controller_admin_pass
     })
   )
   location              = azurerm_resource_group.resgroup.location

@@ -10,7 +10,7 @@ chown -R ${username} /home/${username}/.kube
 
 if [ "${install_needed}" == "true" ]
 then
-  su - nginx -c /opt/controller_install.sh "${hostname}.${domain}" "${controller_admin_user}" "${controller_admin_pass}"
+  su - nginx -c /opt/nginx-install/controller_install.sh "${install_needed}" "${hostname}.${domain}" "${controller_admin_user}" "${controller_admin_pass}"
 fi
 
 systemctl stop kubelet.service
