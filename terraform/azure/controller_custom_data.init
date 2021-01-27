@@ -4,17 +4,17 @@ echo ${hostname} > /etc/hostname
 echo "${ipaddr}  ${hostname} ${hostname}.${domain}" >> /etc/hosts
 hostname ${hostname}
 
-mkdir /home/${username}/.kube
-cp /etc/kubernetes/admin.conf /home/${username}/.kube/config
-chown -R ${username} /home/${username}/.kube
-
 if [ "${install_needed}" == "true" ]
 then
-  su - nginx -c /opt/nginx-install/controller_install.sh "${install_needed}" "${hostname}.${domain}" "${controller_admin_user}" "${controller_admin_pass}"
-fi
+  su - nginx -c '/opt/nginx-install/controller_install.sh "${install_needed}" "${hostname}.${domain}" "${controller_admin_user}" "${controller_admin_pass}"'
+else
+  mkdir /home/${username}/.kube
+  cp /etc/kubernetes/admin.conf /home/${username}/.kube/config
+  chown -R ${username} /home/${username}/.kube
 
-systemctl stop kubelet.service
-systemctl stop kubepods.slice
-systemctl start kubelet.service
-systemctl start kubepods.slice
+  systemctl stop kubelet.service
+  systemctl stop kubepods.slice
+  systemctl start kubelet.service
+  systemctl start kubepods.slice
+fi
 
