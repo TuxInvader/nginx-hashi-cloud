@@ -1,0 +1,64 @@
+{
+  "description" : "Create an image for NGINX Controller",
+
+  "builders": [{
+    "type": "azure-arm",
+    "subscription_id": "{{ user `subscription` }}",
+    "temp_compute_name": "{{user `nginx_host`}}",
+    "managed_image_resource_group_name": "{{ user `buildRG` }}",
+    "managed_image_name": "{{ user `imageName` }}",
+    "os_type": "Linux",
+    "image_publisher": "Canonical",
+    "image_offer": "UbuntuServer",
+    "image_sku": "18.04-LTS",
+    "location": "{{ user `azure_region` }}",
+    "vm_size": "{{ user `nginx_vm_size` }}"
+  }],
+  
+  "provisioners": [
+  {
+    "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+    "inline": [ 
+      "mkdir /etc/ssl/nginx", 
+      "chown packer /etc/ssl/nginx" 
+    ],
+    "inline_shebang": "/bin/sh -x",
+    "type": "shell"
+  },
+  {
+    "type": "file",
+    "source": "{{ user `nginx_ssl_key`}}",
+    "destination": "/etc/ssl/nginx/nginx-repo.key"
+  },
+  {
+    "type": "file",
+    "source": "{{ user `nginx_ssl_crt`}}",
+    "destination": "/etc/ssl/nginx/nginx-repo.crt"
+  },
+  {
+    "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+    "inline": [
+      "chown -R root:root /etc/ssl/nginx",
+      "apt-get update",
+      "apt-get install apt-transport-https lsb-release ca-certificates curl",
+      "curl https://nginx.org/keys/nginx_signing.key | apt-key add",
+      "printf \"deb https://plus-pkgs.nginx.com/ubuntu `lsb_release -cs` nginx-plus\n\" > /etc/apt/sources.list.d/nginx-plus.list",
+      "wget -q -O /etc/apt/apt.conf.d/90nginx https://cs.nginx.com/static/files/90nginx",
+      "apt-get update",
+      "apt-get upgrade -y",
+      "apt-get install -y gawk bash conntrack coreutils curl ebtables gettext ethtool libc-bin grep gzip iproute2 iptables jq less openssl sed socat tar util-linux",
+      "apt-get install -y nginx-plus {{ user `nginx_modules` }}"
+    ],
+    "inline_shebang": "/bin/sh -x",
+    "type": "shell"
+  },
+  {
+    "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+    "inline": [
+      "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"
+    ],
+    "inline_shebang": "/bin/sh -x",
+    "type": "shell"
+  }
+  ]
+}

@@ -6,7 +6,7 @@ You can either build an image for a known hostname and IP address that has contr
 or you can build an image which has the installer primed and ready to run on first deployment through cloud init.
 The `full_build` setting determines which type is built.
 
-Copy and edit the controller_pkvars.example to controller.pkrvars.json, and then run:
+Copy and edit the controller_pkrvars.example to controller.pkrvars.json, and then run:
 
 ```
 packer build -var-file controller.pkrvars.json pack_controller.json
@@ -20,4 +20,10 @@ Using `full_build` true will boot into controller quickly, but be less flexible.
 the image with dynamic hostname and IP addresses then you should set `full_build` to false here, and set `install_needed`
 to true in terraform. That configuration will install controller during first boot.
 
+## Pack NGINX Plus
 
+Copy and edit the nginx_pkrvars.example to nginx.pkrvars.json, and then run:
+
+```
+packer build -var-file nginx.pkrvars.json pack_nginx.json
+```
