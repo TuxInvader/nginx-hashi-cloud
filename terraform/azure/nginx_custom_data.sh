@@ -2,7 +2,7 @@
 
 function register_with_controller() {
 
-  curl -k -sS -L https://${hostname}.${domain}/install/controller-agent > /var/run/cloud-init/install.sh
+  curl -k -sS -L https://${controller_name}.${domain}/install/controller-agent > /var/run/cloud-init/install.sh
   curl -kvv -X POST -f -c /var/run/cloud-init/cookie.jar \
     -H 'Content-type: application/json' \
     -d '{ 
@@ -11,12 +11,12 @@ function register_with_controller() {
         "username":"${controller_admin_user}", 
         "password":"${controller_admin_pass}"
       }}' \
-    https://${hostname}.${domain}/api/v1/platform/login
+    https://${controller_name}.${domain}/api/v1/platform/login
 
   grep session /var/run/cloud-init/cookie.jar >/dev//null 2>&1 || return 1
 
   API_KEY=$(curl -kvv -f -b /var/run/cloud-init/cookie.jar \
-    https://${hostname}.${domain}/api/v1/platform/global | jq .desiredState.agentSettings.apiKey)
+    https://${controller_name}.${domain}/api/v1/platform/global | jq .desiredState.agentSettings.apiKey)
   export API_KEY
 
   if [ "${nginx_location}" == "" ]
@@ -32,7 +32,7 @@ function register_with_controller() {
         }, "desiredState": {
           "type": "OTHER_LOCATION"
         }}' \
-      https://${hostname}.${domain}/api/v1/infrastructure/locations/${nginx_location}
+      https://${controller_name}.${domain}/api/v1/infrastructure/locations/${nginx_location}
     
     [ $? -ne 0 ] && return $?
     sh /var/run/cloud-init/install.sh -i ${hostname} -l ${nginx_location}

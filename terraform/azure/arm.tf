@@ -114,10 +114,11 @@ resource "azurerm_linux_virtual_machine" "nginx-vm" {
   computer_name         = "${var.nginx_name}${count.index + 1}"
   custom_data           = base64encode( 
     templatefile( "nginx_custom_data.sh", { 
-      "hostname": "${var.controller_name}${count.index + 1}"
+      "hostname": "${var.nginx_name}${count.index + 1}"
       "domain": "${var.location}.cloudapp.azure.com"
       "ipaddr": azurerm_network_interface.nginx-public-nics[count.index].private_ip_address
       "username": var.admin_user
+      "controller_name": "${var.controller_name}1"
       "controller_admin_user": var.controller_admin_user
       "controller_admin_pass": var.controller_admin_pass
       "controller_token": var.controller_token
@@ -145,7 +146,7 @@ resource "azurerm_linux_virtual_machine" "nginx-vm" {
   }
 
   depends_on = [ azurerm_linux_virtual_machine.ctrl-vm ]
-  
+
 }
 
  # outputs
