@@ -51,4 +51,5 @@ then
   do 
     sleep 10
   done
+  rm /var/run/cloud-init/cookie.jar
 fi
