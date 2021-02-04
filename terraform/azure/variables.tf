@@ -45,8 +45,17 @@ variable "controller_name" {
   description = "hostname for the controller"
 }
 
+variable "nginx_image" {
+  description = "The NGINX Plus image"
+}
+
 variable "nginx_name" {
   description = "hostname for the nginx instance(s)"
+}
+
+variable "nginx_location" {
+  description = "Controller location for registering with NGINX Controller"
+  default = ""
 }
 
 variable "fw_ssh_prefixes" {
@@ -81,3 +90,7 @@ variable "controller_admin_pass" {
   default = "ChangeMeIfInstallNeededIsTrue"
 }
 
+variable "controller_token" {
+  description = "Your controller assosciation token. If provided the controller will be licensed at startup"
+  default = ""
+}

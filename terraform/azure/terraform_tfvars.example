@@ -8,6 +8,7 @@ prefix = "tux-tf"
 image_rg = "tux-images"
 controller_image = "controller-3.12.1"
 controller_name = "tuxctl"
+nginx_image = "nginx-plus-r23"
 nginx_name = "tuxngx"
 fw_ssh_prefixes = [ "8.8.8.8", "4.4.4.4" ]
 fw_service_prefixes = [ "0.0.0.0/0" ]
