@@ -81,12 +81,12 @@ variable "install_needed" {
 }
 
 variable "controller_admin_user" {
-  description = "The admin user email address. Only needed if install_needed is true"
+  description = "The admin user email address. Only needed if install_needed is true or you set a controller_token for auto-licensing"
   default = "ChangeMeIfInstallNeededIsTrue"
 }
 
 variable "controller_admin_pass" {
-  description = "The admin user password. Only needed if install_needed is true"
+  description = "The admin user password. Only needed if install_needed is true or you set a controller_token for auto-licensing"
   default = "ChangeMeIfInstallNeededIsTrue"
 }
 
