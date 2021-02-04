@@ -75,7 +75,7 @@ resource "azurerm_linux_virtual_machine" "ctrl-vm" {
   name                  = "${var.controller_name}${count.index + 1}"
   computer_name         = "${var.controller_name}${count.index + 1}"
   custom_data           = base64encode( 
-    templatefile( "controller_custom_data.init", { 
+    templatefile( "controller_custom_data.sh", { 
       "install_needed": var.install_needed
       "hostname": "${var.controller_name}${count.index + 1}"
       "domain": "${var.location}.cloudapp.azure.com"
@@ -113,7 +113,7 @@ resource "azurerm_linux_virtual_machine" "nginx-vm" {
   name                  = "${var.nginx_name}${count.index + 1}"
   computer_name         = "${var.nginx_name}${count.index + 1}"
   custom_data           = base64encode( 
-    templatefile( "nginx_custom_data.init", { 
+    templatefile( "nginx_custom_data.sh", { 
       "hostname": "${var.controller_name}${count.index + 1}"
       "domain": "${var.location}.cloudapp.azure.com"
       "ipaddr": azurerm_network_interface.nginx-public-nics[count.index].private_ip_address
@@ -145,6 +145,7 @@ resource "azurerm_linux_virtual_machine" "nginx-vm" {
   }
 
   depends_on = [ azurerm_linux_virtual_machine.ctrl-vm ]
+  
 }
 
  # outputs
