@@ -38,11 +38,12 @@ else
   mkdir /home/${username}/.kube
   cp /etc/kubernetes/admin.conf /home/${username}/.kube/config
   chown -R ${username} /home/${username}/.kube
-
-  systemctl stop kubelet.service
-  systemctl stop kubepods.slice
+  
   systemctl start kubelet.service
-  systemctl start kubepods.slice
+  systemctl enable kubelet.service
+
+  # Give controller a couple of minutes to startup
+  sleep 120
 fi
 
 if [ "${controller_token}" != "" ]

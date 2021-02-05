@@ -34,7 +34,7 @@ function register_with_controller() {
         }}' \
       https://${controller_name}.${domain}/api/v1/infrastructure/locations/${nginx_location}
     
-    [ $? -ne 0 ] && return $?
+    [ $? -ne 0 ] && return 1
     sh /var/run/cloud-init/install.sh -i ${hostname} -l ${nginx_location}
     return $?
   fi
