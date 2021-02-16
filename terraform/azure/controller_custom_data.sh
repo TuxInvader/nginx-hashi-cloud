@@ -85,7 +85,7 @@ if [ "${install_needed}" == "true" ]
 then
   date +"%Y-%m-%d %H:%M:%S ========================================================="
   date +"%Y-%m-%d %H:%M:%S Install Needed - Installing Controller"
-  su - nginx -c '/opt/nginx-install/controller_install.sh "${install_needed}" "${hostname}.${domain}" "${controller_admin_user}" "${controller_admin_pass}"'
+  su - ${username} -c '/opt/nginx-install/controller_install.sh "${install_needed}" "${hostname}.${domain}" "${controller_admin_user}" "${controller_admin_pass}"'
 else
   date +"%Y-%m-%d %H:%M:%S ========================================================="
   date +"%Y-%m-%d %H:%M:%S Controller Installed by Packer"
