@@ -17,7 +17,9 @@ resource "azurerm_subnet" "k8s-subnet" {
   address_prefixes = [ "192.168.${count.index}.0/24" ]
   virtual_network_name = azurerm_virtual_network.cntnr-vnet.name
   resource_group_name = azurerm_resource_group.resgroup.name
-
+  depends_on = [
+    azurerm_subnet_route_table_association.private-routes-assoc
+   ]
 }
 
 resource "azurerm_subnet_route_table_association" "container-routes-assoc" {
