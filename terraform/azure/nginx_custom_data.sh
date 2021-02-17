@@ -126,5 +126,16 @@ then
 fi
 
 date +"%Y-%m-%d %H:%M:%S ========================================================="
+date +"%Y-%m-%d %H:%M:%S Settin up routes for kubernetes"
+
+cat > /etc/rc.local <<EOF
+ip route add 10.240.0.0/12 dev eth1 via 10.2.0.1
+exit 0
+EOF
+
+chmod +x /etc/rc.local
+/etc/rc.local
+
+date +"%Y-%m-%d %H:%M:%S ========================================================="
 date +"%Y-%m-%d %H:%M:%S ==================== COMPLETE ==========================="
 date +"%Y-%m-%d %H:%M:%S ========================================================="

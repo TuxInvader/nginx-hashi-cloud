@@ -31,6 +31,19 @@ resource "azurerm_network_interface" "nginx-public-nics" {
   }
 }
 
+resource "azurerm_network_interface" "nginx-private-nics" {
+  count               = var.nginxs
+  name                = "nginx-private-nic-${count.index + 1}"
+  location            = azurerm_resource_group.resgroup.location
+  resource_group_name = azurerm_resource_group.resgroup.name
+
+  ip_configuration {
+    name                            = "nginx-private-nic-ip-${count.index + 1}"
+    subnet_id                       = azurerm_subnet.private.id
+    private_ip_address_allocation   = "Dynamic"
+  }
+}
+
 resource "azurerm_network_interface" "ctrl-mgmnt-nics" {
   count               = var.controllers
   name                = "ctrl-mgmnt-nic-${count.index + 1}"
@@ -47,15 +60,15 @@ resource "azurerm_network_interface" "ctrl-mgmnt-nics" {
   }
 }
 
-resource "azurerm_network_interface" "ctrl-public-nics" {
+resource "azurerm_network_interface" "ctrl-private-nics" {
   count               = var.controllers
-  name                = "ctrl-public-nic-${count.index + 1}"
+  name                = "ctrl-private-nic-${count.index + 1}"
   location            = azurerm_resource_group.resgroup.location
   resource_group_name = azurerm_resource_group.resgroup.name
 
   ip_configuration {
-    name                          = "ctrl-public-nic-ip-${count.index + 1}"
-    subnet_id                     = azurerm_subnet.public.id
+    name                          = "ctrl-private-nic-ip-${count.index + 1}"
+    subnet_id                     = azurerm_subnet.private.id
     private_ip_address_allocation = "Dynamic"
   }
 }
@@ -90,7 +103,7 @@ resource "azurerm_linux_virtual_machine" "ctrl-vm" {
   resource_group_name   = azurerm_resource_group.resgroup.name
   network_interface_ids = [
     azurerm_network_interface.ctrl-mgmnt-nics[count.index].id,
-    azurerm_network_interface.ctrl-public-nics[count.index].id
+    azurerm_network_interface.ctrl-private-nics[count.index].id
   ]
   size                  = var.controller_size
   admin_username        = var.admin_user
@@ -128,7 +141,8 @@ resource "azurerm_linux_virtual_machine" "nginx-vm" {
   location              = azurerm_resource_group.resgroup.location
   resource_group_name   = azurerm_resource_group.resgroup.name
   network_interface_ids = [
-    azurerm_network_interface.nginx-public-nics[count.index].id
+    azurerm_network_interface.nginx-public-nics[count.index].id,
+    azurerm_network_interface.nginx-private-nics[count.index].id
   ]
   size                  = var.nginx_size
   admin_username        = var.admin_user

@@ -98,3 +98,13 @@ resource "azurerm_virtual_network_peering" "infra-cntnr" {
   remote_virtual_network_id = azurerm_virtual_network.cntnr-vnet.id
 }
 
+resource "azurerm_route_table" "private-route-table" {
+  name                  = "private-route-table"
+  location              = azurerm_resource_group.resgroup.location
+  resource_group_name   = azurerm_resource_group.resgroup.name
+}
+
+resource "azurerm_subnet_route_table_association" "private-routes-assoc" {
+  subnet_id      = azurerm_subnet.private.id
+  route_table_id = azurerm_route_table.private-route-table.id
+}

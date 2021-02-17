@@ -7,13 +7,30 @@ variable "location" {
 }
 
 variable "clusters" {
-  description = "The number of Kubernetes clusters to deploy."
+  description = "The number of Kubernetes clusters to deploy (default=1, max=10)."
+  default = 1
+  validation {
+    condition = (
+      var.clusters >= 1 && var.clusters <=10
+    )
+    error_message = "Clusters must be between 1 and 10."
+  }
 }
 
 variable "nginxs" {
   description = "The number of NGINX instances to deploy."
 }
 
+variable "cluster_nodes" {
+  description = "The number of K8s nodes to deploy (default=1, max=250)"
+  default = 1
+  validation {
+    condition = (
+      var.cluster_nodes >= 1 && var.cluster_nodes <=250
+    )
+    error_message = "Nodes must be between 1 and 250."
+  }
+}
 variable "controllers" {
   description = "The number of Controllers to deploy."
 }

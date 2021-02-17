@@ -1,10 +1,29 @@
 
+resource "azurerm_user_assigned_identity" "identity" {
+  name                = "${var.prefix}-identity"
+  resource_group_name = azurerm_resource_group.resgroup.name
+  location            = azurerm_resource_group.resgroup.location
+}
+
+resource "azurerm_role_assignment" "network-contrib-assignment" {
+  scope                = azurerm_resource_group.resgroup.id
+  role_definition_name = "Network Contributor"
+  principal_id         = azurerm_user_assigned_identity.identity.principal_id
+}
+
 resource "azurerm_subnet" "k8s-subnet" {
   count = var.clusters
   name = "${var.prefix}-k8sub-${count.index}"
   address_prefixes = [ "192.168.${count.index}.0/24" ]
   virtual_network_name = azurerm_virtual_network.cntnr-vnet.name
   resource_group_name = azurerm_resource_group.resgroup.name
+
+}
+
+resource "azurerm_subnet_route_table_association" "container-routes-assoc" {
+  count          = var.clusters
+  subnet_id      = azurerm_subnet.k8s-subnet[count.index].id
+  route_table_id = azurerm_route_table.private-route-table.id
 }
 
 resource "azurerm_kubernetes_cluster" "config" {
@@ -16,13 +35,14 @@ resource "azurerm_kubernetes_cluster" "config" {
   
   default_node_pool {
     name       = "default"
-    node_count = 1
+    node_count = var.cluster_nodes
     vm_size    = "Standard_DS2_v2"
     vnet_subnet_id = azurerm_subnet.k8s-subnet[count.index].id
   }
 
   identity {
-    type = "SystemAssigned"
+    type = "UserAssigned"
+    user_assigned_identity_id = azurerm_user_assigned_identity.identity.id
   }
 
   network_profile {
