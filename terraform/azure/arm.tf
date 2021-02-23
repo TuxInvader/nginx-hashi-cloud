@@ -22,6 +22,7 @@ resource "azurerm_network_interface" "nginx-public-nics" {
   name                = "nginx-public-nic-${count.index + 1}"
   location            = azurerm_resource_group.resgroup.location
   resource_group_name = azurerm_resource_group.resgroup.name
+  internal_dns_name_label     = "${var.nginx_name}${count.index + 1}s"
 
   ip_configuration {
     name                            = "nginx-public-nic-ip-${count.index + 1}"
@@ -32,10 +33,11 @@ resource "azurerm_network_interface" "nginx-public-nics" {
 }
 
 resource "azurerm_network_interface" "nginx-private-nics" {
-  count               = var.nginxs
-  name                = "nginx-private-nic-${count.index + 1}"
-  location            = azurerm_resource_group.resgroup.location
-  resource_group_name = azurerm_resource_group.resgroup.name
+  count                       = var.nginxs
+  name                        = "nginx-private-nic-${count.index + 1}"
+  location                    = azurerm_resource_group.resgroup.location
+  resource_group_name         = azurerm_resource_group.resgroup.name
+  internal_dns_name_label     = "${var.nginx_name}${count.index + 1}"
 
   ip_configuration {
     name                            = "nginx-private-nic-ip-${count.index + 1}"
@@ -45,10 +47,11 @@ resource "azurerm_network_interface" "nginx-private-nics" {
 }
 
 resource "azurerm_network_interface" "ctrl-mgmnt-nics" {
-  count               = var.controllers
-  name                = "ctrl-mgmnt-nic-${count.index + 1}"
-  location            = azurerm_resource_group.resgroup.location
-  resource_group_name = azurerm_resource_group.resgroup.name
+  count                       = var.controllers
+  name                        = "ctrl-mgmnt-nic-${count.index + 1}"
+  location                    = azurerm_resource_group.resgroup.location
+  resource_group_name         = azurerm_resource_group.resgroup.name
+  internal_dns_name_label     = "${var.controller_name}${count.index + 1}"
 
   ip_configuration {
     name                          = "ctrl-mgmnt-nic-ip-${count.index + 1}"
@@ -61,10 +64,11 @@ resource "azurerm_network_interface" "ctrl-mgmnt-nics" {
 }
 
 resource "azurerm_network_interface" "ctrl-private-nics" {
-  count               = var.controllers
-  name                = "ctrl-private-nic-${count.index + 1}"
-  location            = azurerm_resource_group.resgroup.location
-  resource_group_name = azurerm_resource_group.resgroup.name
+  count                       = var.controllers
+  name                        = "ctrl-private-nic-${count.index + 1}"
+  location                    = azurerm_resource_group.resgroup.location
+  resource_group_name         = azurerm_resource_group.resgroup.name
+  internal_dns_name_label     = "${var.controller_name}${count.index + 1}s"
 
   ip_configuration {
     name                          = "ctrl-private-nic-ip-${count.index + 1}"
@@ -119,6 +123,8 @@ resource "azurerm_linux_virtual_machine" "ctrl-vm" {
     caching           = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
+
+  depends_on = [ azurerm_linux_virtual_machine.nginx-vm.0 ]
 }
 
 resource "azurerm_linux_virtual_machine" "nginx-vm" {
@@ -129,7 +135,7 @@ resource "azurerm_linux_virtual_machine" "nginx-vm" {
     templatefile( "nginx_custom_data.sh", { 
       "hostname": "${var.nginx_name}${count.index + 1}"
       "domain": "${var.location}.cloudapp.azure.com"
-      "ipaddr": azurerm_network_interface.nginx-public-nics[count.index].private_ip_address
+      "ipaddr": azurerm_network_interface.nginx-private-nics[count.index].private_ip_address
       "username": var.admin_user
       "controller_name": "${var.controller_name}1"
       "controller_admin_user": var.controller_admin_user
@@ -159,7 +165,7 @@ resource "azurerm_linux_virtual_machine" "nginx-vm" {
     storage_account_type = "Standard_LRS"
   }
 
-  depends_on = [ azurerm_linux_virtual_machine.ctrl-vm ]
+  #depends_on = [ azurerm_linux_virtual_machine.ctrl-vm ]
 
 }
 

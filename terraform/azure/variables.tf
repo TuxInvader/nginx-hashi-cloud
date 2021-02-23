@@ -11,7 +11,7 @@ variable "clusters" {
   default = 1
   validation {
     condition = (
-      var.clusters >= 1 && var.clusters <=10
+      var.clusters >= 0 && var.clusters <=10
     )
     error_message = "Clusters must be between 1 and 10."
   }
@@ -26,7 +26,7 @@ variable "cluster_nodes" {
   default = 1
   validation {
     condition = (
-      var.cluster_nodes >= 1 && var.cluster_nodes <=250
+      var.cluster_nodes >= 0 && var.cluster_nodes <=250
     )
     error_message = "Nodes must be between 1 and 250."
   }

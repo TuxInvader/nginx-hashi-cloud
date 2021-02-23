@@ -77,9 +77,14 @@ function license_controller() {
 
 date +"%Y-%m-%d %H:%M:%S ========================================================="
 date +"%Y-%m-%d %H:%M:%S Setting Hostname"
-echo ${hostname} > /etc/hostname
-echo "${ipaddr}  ${hostname} ${hostname}.${domain}" >> /etc/hosts
-hostname ${hostname}
+#echo ${hostname} > /etc/hostname
+#echo "${ipaddr}  ${hostname} ${hostname}.${domain}" >> /etc/hosts
+#hostname ${hostname}.${domain}
+
+echo ${hostname}.${domain} > /etc/hostname
+#echo "${ipaddr}  ${hostname} ${hostname}.${domain}" >> /etc/hosts
+echo "127.0.1.1  ${hostname} ${hostname}.${domain}" >> /etc/hosts
+hostname ${hostname}.${domain}
 
 if [ "${install_needed}" == "true" ]
 then
