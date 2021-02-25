@@ -5,44 +5,72 @@ resource "azurerm_network_security_group" "internet-nsg" {
   name = "internet-nsg"
   resource_group_name = azurerm_resource_group.resgroup.name
   location = azurerm_resource_group.resgroup.location
-  security_rule = [ {
-    access = "Allow"
-    description = "SSH"
-    destination_address_prefix = "*"
-    destination_address_prefixes = null
-    destination_application_security_group_ids = []
-    destination_port_range = "22"
-    destination_port_ranges = null
-    direction = "Inbound"
-    name = "SSH"
-    priority = 100
-    protocol = "Tcp"
-    source_address_prefix = null
-    source_address_prefixes = var.fw_ssh_prefixes
-    source_application_security_group_ids = null
-    source_port_range = "*"
-    source_port_ranges = null
-  },
-  {
-    access = "Allow"
-    description = "Web Services"
-    destination_address_prefix = "*"
-    destination_address_prefixes = null
-    destination_application_security_group_ids = []
-    destination_port_range = null
-    destination_port_ranges = ["80", "443"]
-    direction = "Inbound"
-    name = "WebServices"
-    priority = 200
-    protocol = "Tcp"
-    source_address_prefix = null
-    source_address_prefixes = var.fw_service_prefixes
-    source_application_security_group_ids = null
-    source_port_range = "*"
-    source_port_ranges = null
-  }]
-  
+  security_rule = []
 }
+
+resource "azurerm_network_security_rule" "ssh" {
+  name = "SSH"
+  description = "SSH"
+  resource_group_name = azurerm_resource_group.resgroup.name
+  network_security_group_name = azurerm_network_security_group.internet-nsg.name
+  priority = 100
+  protocol = "Tcp"
+  direction = "Inbound"
+  access = "Allow"
+  destination_address_prefix = "*"
+  destination_address_prefixes = null
+  destination_application_security_group_ids = []
+  destination_port_range = "22"
+  destination_port_ranges = null
+  source_address_prefix = null
+  source_address_prefixes = var.fw_ssh_prefixes
+  source_application_security_group_ids = null
+  source_port_range = "*"
+  source_port_ranges = null
+}
+
+resource "azurerm_network_security_rule" "web" {
+  name = "WebServices"
+  description = "Web Services"
+  resource_group_name = azurerm_resource_group.resgroup.name
+  network_security_group_name = azurerm_network_security_group.internet-nsg.name
+  priority = 200
+  protocol = "Tcp"
+  access = "Allow"
+  destination_address_prefix = "*"
+  destination_address_prefixes = null
+  destination_application_security_group_ids = []
+  destination_port_range = null
+  destination_port_ranges = ["80", "443"]
+  direction = "Inbound"
+  source_address_prefix = null
+  source_address_prefixes = var.fw_service_prefixes
+  source_application_security_group_ids = null
+  source_port_range = "*"
+  source_port_ranges = null
+  }
+
+  resource "azurerm_network_security_rule" "agent" {
+  count = var.use_internal_domain ? 0 : 1
+  name = "nginxAgents"
+  description = "NGINX Agents"
+  resource_group_name = azurerm_resource_group.resgroup.name
+  network_security_group_name = azurerm_network_security_group.internet-nsg.name
+  priority = 201
+  protocol = "Tcp"
+  access = "Allow"
+  destination_address_prefix = "*"
+  destination_address_prefixes = null
+  destination_application_security_group_ids = []
+  destination_port_range = null
+  destination_port_ranges = ["8443", "443"]
+  direction = "Inbound"
+  source_address_prefix = null
+  source_address_prefixes = var.fw_service_prefixes
+  source_application_security_group_ids = null
+  source_port_range = "*"
+  source_port_ranges = null
+  }
 
 resource "azurerm_virtual_network" "infra-vnet" {
   name = "infra-vnet"
@@ -74,6 +102,11 @@ resource "azurerm_subnet" "management" {
 
 resource "azurerm_subnet_network_security_group_association" "public-internet-nsg" {
   subnet_id                 = azurerm_subnet.public.id
+  network_security_group_id = azurerm_network_security_group.internet-nsg.id
+}
+
+resource "azurerm_subnet_network_security_group_association" "mgmnt-internet-nsg" {
+  subnet_id                 = azurerm_subnet.management.id
   network_security_group_id = azurerm_network_security_group.internet-nsg.id
 }
 

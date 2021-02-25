@@ -96,6 +96,7 @@ resource "azurerm_linux_virtual_machine" "ctrl-vm" {
       "install_needed": var.install_needed
       "hostname": "${var.controller_name}${count.index + 1}"
       "domain": "${var.location}.cloudapp.azure.com"
+      "internal_domain": var.use_internal_domain 
       "ipaddr": azurerm_network_interface.ctrl-mgmnt-nics[count.index].private_ip_address
       "username": var.admin_user
       "controller_admin_user": var.controller_admin_user
@@ -123,8 +124,7 @@ resource "azurerm_linux_virtual_machine" "ctrl-vm" {
     caching           = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
-
-  depends_on = [ azurerm_linux_virtual_machine.nginx-vm.0 ]
+  
 }
 
 resource "azurerm_linux_virtual_machine" "nginx-vm" {
@@ -135,6 +135,7 @@ resource "azurerm_linux_virtual_machine" "nginx-vm" {
     templatefile( "nginx_custom_data.sh", { 
       "hostname": "${var.nginx_name}${count.index + 1}"
       "domain": "${var.location}.cloudapp.azure.com"
+      "internal_domain": var.use_internal_domain 
       "ipaddr": azurerm_network_interface.nginx-private-nics[count.index].private_ip_address
       "username": var.admin_user
       "controller_name": "${var.controller_name}1"
@@ -165,7 +166,7 @@ resource "azurerm_linux_virtual_machine" "nginx-vm" {
     storage_account_type = "Standard_LRS"
   }
 
-  #depends_on = [ azurerm_linux_virtual_machine.ctrl-vm ]
+  depends_on = [ azurerm_linux_virtual_machine.ctrl-vm ]
 
 }
 

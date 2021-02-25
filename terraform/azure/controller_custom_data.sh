@@ -1,5 +1,9 @@
 #!/bin/bash
 
+fqdn="${hostname}.${domain}"
+[ "${internal_domain}" == "true" ] && fqdn="${hostname}.internal.cloudapp.net"
+export fqdn
+
 function put_license() {
   date +"%Y-%m-%d %H:%M:%S ========================================================="
   date +"%Y-%m-%d %H:%M:%S Putting Controller License"
@@ -11,12 +15,11 @@ function put_license() {
       }, "desiredState": {
         "content": "${controller_token}"
       }}' \
-    https://${hostname}.${domain}/api/v1/platform/license > /var/run/cloud-init/ctrl-license.log
+    https://$${fqdn}/api/v1/platform/license > /var/run/cloud-init/ctrl-license.log
     return $?
 }
 
 function license_controller() {
-  
   date +"%Y-%m-%d %H:%M:%S ========================================================="
   date +"%Y-%m-%d %H:%M:%S ==================== LICENSE ============================"
   date +"%Y-%m-%d %H:%M:%S ========================================================="
@@ -29,7 +32,7 @@ function license_controller() {
         "username":"${controller_admin_user}", 
         "password":"${controller_admin_pass}"
       }}' \
-    https://${hostname}.${domain}/api/v1/platform/login
+    https://$${fqdn}/api/v1/platform/login
 
   grep session /var/run/cloud-init/cookie.jar >/dev//null 2>&1 || return 1
   date +"%Y-%m-%d %H:%M:%S ========================================================="
@@ -43,7 +46,7 @@ function license_controller() {
   do
     date +"%Y-%m-%d %H:%M:%S ========================================================="
     date +"%Y-%m-%d %H:%M:%S Controller License status GET"
-    curl -kvv -f -b /var/run/cloud-init/cookie.jar https://${hostname}.${domain}/api/v1/platform/license > /var/run/cloud-init/ctrl-license.log
+    curl -kvv -f -b /var/run/cloud-init/cookie.jar https://$${fqdn}/api/v1/platform/license > /var/run/cloud-init/ctrl-license.log
     grep '"isError":true' /var/run/cloud-init/ctrl-license.log >/dev/null
     if [ $? -eq 0 ]
     then
@@ -76,21 +79,25 @@ function license_controller() {
 }
 
 date +"%Y-%m-%d %H:%M:%S ========================================================="
-date +"%Y-%m-%d %H:%M:%S Setting Hostname"
-#echo ${hostname} > /etc/hostname
-#echo "${ipaddr}  ${hostname} ${hostname}.${domain}" >> /etc/hosts
-#hostname ${hostname}.${domain}
+date +"%Y-%m-%d %H:%M:%S Setting WAAgent to monitor Hostname and restarting service"
+date +"%Y-%m-%d %H:%M:%S See: https://github.com/Azure/WALinuxAgent/issues/1398 "
+date +"%Y-%m-%d %H:%M:%S See: https://github.com/Azure/WALinuxAgent/issues/119 "
+sed -i -re 's/Provisioning.MonitorHostName=n/Provisioning.MonitorHostName=y/' /etc/waagent.conf
+systemctl restart walinuxagent.service
 
-echo ${hostname}.${domain} > /etc/hostname
-#echo "${ipaddr}  ${hostname} ${hostname}.${domain}" >> /etc/hosts
-echo "127.0.1.1  ${hostname} ${hostname}.${domain}" >> /etc/hosts
-hostname ${hostname}.${domain}
+date +"%Y-%m-%d %H:%M:%S ========================================================="
+date +"%Y-%m-%d %H:%M:%S Ensure the Hostname is correct"
+
+date +"%Y-%m-%d %H:%M:%S Hostname was: $(hostname)"
+echo ${hostname} > /etc/hostname
+hostnamectl set-hostname ${hostname}
+date +"%Y-%m-%d %H:%M:%S Hostname now: $(hostname)"
 
 if [ "${install_needed}" == "true" ]
 then
   date +"%Y-%m-%d %H:%M:%S ========================================================="
   date +"%Y-%m-%d %H:%M:%S Install Needed - Installing Controller"
-  su - ${username} -c '/opt/nginx-install/controller_install.sh "${install_needed}" "${hostname}.${domain}" "${controller_admin_user}" "${controller_admin_pass}"'
+  su - ${username} -c "/opt/nginx-install/controller_install.sh \"${install_needed}\" \"$${fqdn}\" \"${controller_admin_user}\" \"${controller_admin_pass}\""
 else
   date +"%Y-%m-%d %H:%M:%S ========================================================="
   date +"%Y-%m-%d %H:%M:%S Controller Installed by Packer"

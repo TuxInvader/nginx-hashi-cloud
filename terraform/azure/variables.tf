@@ -6,6 +6,15 @@ variable "location" {
   description = "The Azure Region in which all resources in this example should be provisioned"
 }
 
+variable "use_internal_domain" {
+  description = "Use the internal cloudapp domain (internal.cloudapp.net) if true or the public domain (<region>.cloudapp.azure.com) if false"
+  default = false
+  validation {
+    condition = can( tobool(var.use_internal_domain) )
+    error_message = "Value should be 'true' or 'false'."
+  }
+}
+
 variable "clusters" {
   description = "The number of Kubernetes clusters to deploy (default=1, max=10)."
   default = 1
