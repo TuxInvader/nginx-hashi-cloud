@@ -20,26 +20,25 @@ tar zxvpf controller-installer.tar.gz
 date "+ %H:%M:%S Controller Installer - Installing"
 until controller-installer/install.sh -n -m 127.0.0.1 -x 12321 -b false -g false -j $CONTROLLER_USERNAME -e $CONTROLLER_USERNAME -p $CONTROLLER_PASSWORD -f $CONTROLLER_HOSTNAME -t $CONTROLLER_FIRSTNAME -u $CONTROLLER_SURNAME -c -w -y --configdb-volume-type local --tsdb-volume-type local -a NGINX ; do sleep 10 ; done
 
-# Sleep to ensure all the pods have settled, before shutting down.
-# Exit after 20 mins or when the load drops below 2.0 for 2 consecutive minutes
-date "+ %H:%M:%S Controller Installer - Waiting for K8s to settle"
-for sleeps in {01..20}
-do 
-  load=$(uptime | sed -re 's/.*average: ([^,]+).*/\1/')
-  date "+ %H:%M:%S Sleep $sleeps - Load: $load, Previous: $lastload"
-  if [ $sleeps -gt 3 ]
-  then
-    if [[ "$load" =~ ^[01]. ]] && [[ "$lastload" =~ ^[01]. ]]
-    then
-      break
-    fi
-  fi
-  lastload=$load
-  sleep 60
-done
+if [ $(whoami) == "packer" ]
+then
 
-# Disable kubernetes at startup. We'll re-enable with cloud-init
-date "+ %H:%M:%S Controller Installer - Disabling Kubernetes."
-sudo systemctl disable kubelet.service
+  # Sleep for 5 minutes before continuing.
+  date "+ %H:%M:%S Controller Installer - Waiting for 5 minutes for K8s to settle"
+  lastload=$(uptime | sed -re 's/.*average: ([^,]+).*/\1/')
+  for sleeps in {01..05}
+  do 
+    load=$(uptime | sed -re 's/.*average: ([^,]+).*/\1/')
+    date "+ %H:%M:%S Sleep $sleeps - Load: $load, Previous: $lastload"
+    lastload=$load
+    sleep 60
+  done
+
+  # Disable kubernetes at startup. We'll re-enable with cloud-init
+  date "+ %H:%M:%S Controller Installer - Disabling Kubernetes."
+  sudo systemctl disable kubelet.service
+
+fi
 
 date "+ %H:%M:%S Controller Installer Complete."
+
