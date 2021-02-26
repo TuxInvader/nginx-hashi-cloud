@@ -34,9 +34,11 @@ then
     sleep 60
   done
 
+  # This was required becuase cloud-init wasn't setting the hostname at start up due to 
+  # https://github.com/Azure/WALinuxAgent/issues/2184. We have a work-around, so leave to start normally.
   # Disable kubernetes at startup. We'll re-enable with cloud-init
-  date "+ %H:%M:%S Controller Installer - Disabling Kubernetes."
-  sudo systemctl disable kubelet.service
+  #date "+ %H:%M:%S Controller Installer - Disabling Kubernetes."
+  #sudo systemctl disable kubelet.service
 
 fi
 

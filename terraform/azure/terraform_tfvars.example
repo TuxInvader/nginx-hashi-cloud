@@ -15,6 +15,5 @@ fw_ssh_prefixes = [ "8.8.8.8", "4.4.4.4" ]
 fw_service_prefixes = [ "0.0.0.0/0" ]
 admin_user = "buckrogers"
 admin_ssh_key = "~/.ssh/tf_keys.pub"
-install_needed = "false"
 controller_admin_user = "changeMe"
 controller_admin_pass = "changeMe"

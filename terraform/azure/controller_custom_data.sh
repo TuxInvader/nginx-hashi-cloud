@@ -79,41 +79,34 @@ function license_controller() {
 }
 
 date +"%Y-%m-%d %H:%M:%S ========================================================="
-date +"%Y-%m-%d %H:%M:%S Setting WAAgent to monitor Hostname and restarting service"
-date +"%Y-%m-%d %H:%M:%S See: https://github.com/Azure/WALinuxAgent/issues/1398 "
-date +"%Y-%m-%d %H:%M:%S See: https://github.com/Azure/WALinuxAgent/issues/119 "
-sed -i -re 's/Provisioning.MonitorHostName=n/Provisioning.MonitorHostName=y/' /etc/waagent.conf
-systemctl restart walinuxagent.service
-
-date +"%Y-%m-%d %H:%M:%S ========================================================="
 date +"%Y-%m-%d %H:%M:%S Ensure the Hostname is correct"
 
-date +"%Y-%m-%d %H:%M:%S Hostname was: $(hostname)"
-echo ${hostname} > /etc/hostname
-hostnamectl set-hostname ${hostname}
-date +"%Y-%m-%d %H:%M:%S Hostname now: $(hostname)"
+date +"%Y-%m-%d %H:%M:%S Hostname is: $(hostname)"
+if [ "$(hostname)" != "${hostname}" ]
+then
+  echo ${hostname} > /etc/hostname
+  hostnamectl set-hostname ${hostname}
+  date +"%Y-%m-%d %H:%M:%S Hostname changed to: $(hostname)"
+fi
 
-if [ "${install_needed}" == "true" ]
+if [ -d "/opt/nginx-controller/" ]
 then
   date +"%Y-%m-%d %H:%M:%S ========================================================="
-  date +"%Y-%m-%d %H:%M:%S Install Needed - Installing Controller"
-  su - ${username} -c "/opt/nginx-install/controller_install.sh \"${install_needed}\" \"$${fqdn}\" \"${controller_admin_user}\" \"${controller_admin_pass}\""
-else
-  date +"%Y-%m-%d %H:%M:%S ========================================================="
   date +"%Y-%m-%d %H:%M:%S Controller Installed by Packer"
-  date +"%Y-%m-%d %H:%M:%S Starting Kubernetes"
+  # Copy kubernetes config for ${username}
   mkdir /home/${username}/.kube
   cp /etc/kubernetes/admin.conf /home/${username}/.kube/config
   chown -R ${username} /home/${username}/.kube
-  
-  systemctl start kubelet.service
-  systemctl enable kubelet.service
-
-  # Give controller a couple of minutes to startup
+else
   date +"%Y-%m-%d %H:%M:%S ========================================================="
-  date +"%Y-%m-%d %H:%M:%S Sleeping for 2 minutes"
-  sleep 120
+  date +"%Y-%m-%d %H:%M:%S Install Needed - Installing Controller"
+  su - ${username} -c "/opt/nginx-install/controller_install.sh true \"$${fqdn}\" \"${controller_admin_user}\" \"${controller_admin_pass}\""
 fi
+
+# Give controller a couple of minutes to startup
+date +"%Y-%m-%d %H:%M:%S ========================================================="
+date +"%Y-%m-%d %H:%M:%S Sleeping for 2 minutes"
+sleep 120
 
 if [ "${controller_token}" != "" ]
 then

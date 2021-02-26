@@ -93,7 +93,6 @@ resource "azurerm_linux_virtual_machine" "ctrl-vm" {
   computer_name         = "${var.controller_name}${count.index + 1}"
   custom_data           = base64encode( 
     templatefile( "controller_custom_data.sh", { 
-      "install_needed": var.install_needed
       "hostname": "${var.controller_name}${count.index + 1}"
       "domain": "${var.location}.cloudapp.azure.com"
       "internal_domain": var.use_internal_domain 

@@ -58,7 +58,7 @@ function register_with_controller() {
     date +"%Y-%m-%d %H:%M:%S ========================================================="
     date +"%Y-%m-%d %H:%M:%S Controller Download Installer Script"
     curl -f -k -sS -L https://$${ctrl_fqdn}/install/controller-agent > /var/run/cloud-init/install.sh && \
-    #sed -i -re 's/controller_fqdn="${controller_name}.${domain}"/controller_fqdn="${controller_name}.internal.cloudapp.net"/g' /var/run/cloud-init/install.sh
+    sed -i -re 's/controller_fqdn="${controller_name}.${domain}"/controller_fqdn="${controller_name}.internal.cloudapp.net"/g' /var/run/cloud-init/install.sh
     result=$?
 
     if [ $result -eq 0 ]
