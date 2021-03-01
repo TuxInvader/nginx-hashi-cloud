@@ -112,6 +112,6 @@ variable "controller_admin_pass" {
 }
 
 variable "controller_token" {
-  description = "Your controller assosciation token. If provided the controller will be licensed at startup"
+  description = "Your controller assosciation token or base64 encoded license file. If provided the controller will be licensed at startup"
   default = ""
 }
