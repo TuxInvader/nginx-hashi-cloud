@@ -141,3 +141,4 @@ resource "azurerm_subnet_route_table_association" "private-routes-assoc" {
   subnet_id      = azurerm_subnet.private.id
   route_table_id = azurerm_route_table.private-route-table.id
 }
+
