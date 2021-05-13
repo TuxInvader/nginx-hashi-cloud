@@ -3,6 +3,9 @@ provider "azurerm" {
   features {}
 }
 
+provider "time" {
+}
+
 resource "azurerm_resource_group" "resgroup" {
   name     = "${var.prefix}-resources"
   location = var.location

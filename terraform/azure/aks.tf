@@ -11,6 +11,14 @@ resource "azurerm_role_assignment" "network-contrib-assignment" {
   principal_id         = azurerm_user_assigned_identity.identity.principal_id
 }
 
+# Azure UK has never been a problem, but EU West is slow adding roles, Try sleeping for 60 seconds
+resource "time_sleep" "sleep-60" {
+  depends_on      = [
+    azurerm_role_assignment.network-contrib-assignment
+  ]
+  create_duration = "60s"
+}
+
 resource "azurerm_subnet" "k8s-subnet" {
   count = var.clusters
   name = "${var.prefix}-k8sub-${count.index}"
@@ -18,6 +26,7 @@ resource "azurerm_subnet" "k8s-subnet" {
   virtual_network_name = azurerm_virtual_network.cntnr-vnet.name
   resource_group_name = azurerm_resource_group.resgroup.name
   depends_on = [
+    time_sleep.sleep-60,
     azurerm_subnet_route_table_association.private-routes-assoc
    ]
 }
