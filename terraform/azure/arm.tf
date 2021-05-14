@@ -80,11 +80,13 @@ resource "azurerm_network_interface" "ctrl-private-nics" {
 data "azurerm_image" "ctrl-img" {
   name                = var.controller_image
   resource_group_name = var.image_rg
+  count               = var.controllers
 }
 
 data "azurerm_image" "nginx-img" {
   name                = var.nginx_image
   resource_group_name = var.image_rg
+  count               = var.nginxs
 }
 
 resource "azurerm_linux_virtual_machine" "ctrl-vm" {
@@ -111,7 +113,7 @@ resource "azurerm_linux_virtual_machine" "ctrl-vm" {
   ]
   size                  = var.controller_size
   admin_username        = var.admin_user
-  source_image_id       = data.azurerm_image.ctrl-img.id
+  source_image_id       = data.azurerm_image.ctrl-img.0.id
 
   admin_ssh_key {
     username   = var.admin_user
@@ -152,7 +154,7 @@ resource "azurerm_linux_virtual_machine" "nginx-vm" {
   ]
   size                  = var.nginx_size
   admin_username        = var.admin_user
-  source_image_id       = data.azurerm_image.nginx-img.id
+  source_image_id       = data.azurerm_image.nginx-img.0.id
 
   admin_ssh_key {
     username   = var.admin_user
