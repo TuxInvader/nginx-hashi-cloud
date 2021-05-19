@@ -5,7 +5,7 @@ resource "azurerm_network_security_group" "internet-nsg" {
   name = "internet-nsg"
   resource_group_name = azurerm_resource_group.resgroup.name
   location = azurerm_resource_group.resgroup.location
-  security_rule = []
+  //security_rule = []
 }
 
 resource "azurerm_network_security_rule" "ssh" {

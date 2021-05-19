@@ -37,33 +37,6 @@ resource "azurerm_subnet_route_table_association" "container-routes-assoc" {
   route_table_id = azurerm_route_table.private-route-table.id
 }
 
-/*
-resource "azurerm_public_ip" "cntnr-public-ip" {
-  name                    = "cntnr-public-ip"
-  location                = azurerm_resource_group.resgroup.location
-  resource_group_name     = azurerm_resource_group.resgroup.name
-  allocation_method       = "Dynamic"
-  sku                     = "Standard"
-}
-
-resource "azurerm_nat_gateway" "cntnr-nat-gw" {
-  name                    = "cntnr-nat-gw"
-  location                = azurerm_resource_group.resgroup.location
-  resource_group_name     = azurerm_resource_group.resgroup.name
-}
-
-resource "azurerm_nat_gateway_public_ip_association" "cntnr-nat-gw-ip" {
-  nat_gateway_id       = azurerm_nat_gateway.cntnr-nat-gw.id
-  public_ip_address_id = azurerm_public_ip.cntnr-public-ip.id
-}
-
-resource "azurerm_subnet_nat_gateway_association" "private-natgw-assoc" {
-  count          = var.clusters
-  subnet_id      = azurerm_subnet.k8s-subnet[count.index].id
-  nat_gateway_id = azurerm_nat_gateway.cntnr-nat-gw.id
-}
-*/
-
 resource "azurerm_kubernetes_cluster" "config" {
   count               = var.clusters
   name                = "${var.prefix}-k8s-${count.index}"
