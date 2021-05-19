@@ -7,6 +7,8 @@
     "nginx_vm_size": "Standard_D2s_v3",
     "nginx_ssl_key": "/etc/ssl/nginx/nginx-repo.key",
     "nginx_ssl_crt": "/etc/ssl/nginx/nginx-repo.crt",
-    "nginx_modules": "nginx-plus-module-njs app-protect"
+    "nginx_modules": "nginx-plus-module-njs app-protect",
+    "app_protect": "no",
+    "mod_sec": "no"
 }
 
