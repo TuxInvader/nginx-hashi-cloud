@@ -1,0 +1,14 @@
+{
+    "imageName": "nginx-manager-0.9.2",
+    "buildRG": "tux_img",
+    "subscription": "444aaaaa-1111-bbbb-1111-111111111111",
+    "azure_region": "uksouth",
+    "nim_host": "tux_nginx1",
+    "nim_vm_size": "Standard_D2s_v3",
+    "nginx_ssl_key": "/etc/ssl/nginx/nginx-repo.key",
+    "nginx_ssl_crt": "/etc/ssl/nginx/nginx-repo.crt",
+    "nim_config": "conf/nim_nginx_manager.conf",
+    "nim_nginx_config": "conf/nim_nginx_plus.conf",
+    "nim_license": "~/nginx-manager-free-trial.lic"
+}
+

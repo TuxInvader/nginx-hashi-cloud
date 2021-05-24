@@ -1,0 +1,89 @@
+{
+  "description" : "Create an image for NGINX Controller",
+
+  "builders": [{
+    "type": "azure-arm",
+    "subscription_id": "{{ user `subscription` }}",
+    "temp_compute_name": "{{user `nim_host`}}",
+    "managed_image_resource_group_name": "{{ user `buildRG` }}",
+    "managed_image_name": "{{ user `imageName` }}",
+    "os_type": "Linux",
+    "image_publisher": "Canonical",
+    "image_offer": "UbuntuServer",
+    "image_sku": "18.04-LTS",
+    "location": "{{ user `azure_region` }}",
+    "vm_size": "{{ user `nim_vm_size` }}"
+  }],
+  
+  "provisioners": [
+  {
+    "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+    "inline": [ 
+      "mkdir /etc/ssl/nginx", 
+      "chown packer /etc/ssl/nginx" 
+    ],
+    "inline_shebang": "/bin/sh -x",
+    "type": "shell"
+  },
+  {
+    "type": "file",
+    "source": "{{ user `nginx_ssl_key`}}",
+    "destination": "/etc/ssl/nginx/nginx-repo.key"
+  },
+  {
+    "type": "file",
+    "source": "{{ user `nginx_ssl_crt`}}",
+    "destination": "/etc/ssl/nginx/nginx-repo.crt"
+  },
+  {
+    "type": "file",
+    "source": "{{ user `nim_config` }}",
+    "destination": "/home/packer/nginx-manager.conf"
+  },
+  {
+    "type": "file",
+    "source": "{{ user `nim_nginx_config` }}",
+    "destination": "/home/packer/nginx-manager-lb.conf"
+  },
+  {
+    "type": "file",
+    "source": "{{ user `nim_license` }}",
+    "destination": "/home/packer/nginx-manager.lic"
+  },
+  {
+    "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+    "inline": [
+      "export DEBIAN_FRONTEND=noninteractive",
+      "chown -R root:root /etc/ssl/nginx",
+      "apt-get update",
+      "apt-get install apt-transport-https lsb-release ca-certificates openssl curl",
+      "curl https://cs.nginx.com/static/keys/nginx_signing.key | apt-key add",
+      "curl https://cs.nginx.com/static/keys/app-protect-security-updates.key | apt-key add",
+      "printf \"deb https://pkgs.nginx.com/plus/ubuntu `lsb_release -cs` nginx-plus\n\" > /etc/apt/sources.list.d/nginx-plus.list",
+      "printf \"deb https://pkgs.nginx.com/instance-manager/debian stable nginx-plus\n\" > /etc/apt/sources.list.d/instance-manager.list",
+      "wget -q -O /etc/apt/apt.conf.d/90pkgs-nginx https://cs.nginx.com/static/files/90pkgs-nginx",
+      "apt-get update",
+      "apt-get upgrade -y",
+      "apt-get install -y gawk bash conntrack coreutils curl ebtables gettext ethtool libc-bin grep gzip iproute2 iptables jq less openssl sed socat tar util-linux apache2-utils",
+      "apt-get install -y nginx-plus nginx-manager",
+      "mv /home/packer/nginx-manager.conf /etc/nginx-manager/",
+      "mv /home/packer/nginx-manager-lb.conf /etc/nginx/conf.d/default.conf",
+      "mv /home/packer/nginx-manager.lic /etc/nginx-manager/nginx-manager.lic",
+      "htpasswd -c -b /etc/nginx/nim.passwd {{ user `admin_user` }} {{ user `admin_pass` }}",
+      "openssl req -new -x509 -extensions v3_req -out /etc/nginx-manager/nginx-manager.crt -newkey rsa:2048 -keyout /etc/nginx-manager/nginx-manager.key -nodes -days 365 -addext \"subjectAltName = DNS.0:nim.nginx.demo\" -subj \"/C=GB/ST=London/L=London/O=NGINX Inc/CN=nim.nginx.demo\""
+    ],
+    "inline_shebang": "/bin/sh -x",
+    "type": "shell"
+  },
+  {
+    "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+    "inline": [
+      "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0",
+      "rm /var/lib/cloud/data/set-hostname || echo 'no set-hostname file'",
+      "sync; sync; sync"
+    ],
+    "inline_shebang": "/bin/sh -x",
+    "type": "shell"
+  }
+  ]
+}
