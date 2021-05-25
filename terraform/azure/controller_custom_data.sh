@@ -22,12 +22,12 @@ function license_controller() {
   date +"%Y-%m-%d %H:%M:%S Controller Login"
   curl -kvv -X POST -f -c /var/run/cloud-init/cookie.jar \
     -H 'Content-type: application/json' \
-    -d '{ 
-      "credentials":{ 
-        "type":"BASIC", 
-        "username":"${controller_admin_user}", 
-        "password":"$${admin_pass}"
-      }}' \
+    -d "{ 
+      \"credentials\":{ 
+        \"type\":\"BASIC\", 
+        \"username\":\"${controller_admin_user}\", 
+        \"password\":\"$${admin_pass}\"
+      }}" \
     https://$${fqdn}/api/v1/platform/login
 
   grep session /var/run/cloud-init/cookie.jar >/dev//null 2>&1 || return 1
