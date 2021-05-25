@@ -2,6 +2,7 @@ clusters =  2
 nginxs = 2
 nims = 0
 controllers = 1
+manager = controller
 controller_size = "Standard_D4s_v3"
 nginx_size = "Standard_DS1_v2"
 nim_size = "Standard_DS2_v2"

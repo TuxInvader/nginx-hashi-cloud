@@ -47,13 +47,15 @@ resource "azurerm_linux_virtual_machine" "nginx-vm" {
   name                  = "${var.nginx_name}${count.index + 1}"
   computer_name         = "${var.nginx_name}${count.index + 1}"
   custom_data           = base64encode( 
-    templatefile( "nginx_custom_data.sh", { 
+    templatefile( "nginx_custom_data.sh", {
       "hostname": "${var.nginx_name}${count.index + 1}"
       "domain": "${var.location}.cloudapp.azure.com"
       "internal_domain": var.use_internal_domain 
       "ipaddr": azurerm_network_interface.nginx-private-nics[count.index].private_ip_address
       "username": var.admin_user
+      "manager": var.manager
       "controller_name": "${var.controller_name}1"
+      "nim_name": "${var.nim_name}1"
       "controller_admin_user": var.controller_admin_user
       "controller_admin_pass": var.controller_admin_pass
       "controller_token": var.controller_token

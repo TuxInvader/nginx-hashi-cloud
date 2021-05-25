@@ -15,6 +15,17 @@ variable "use_internal_domain" {
   }
 }
 
+variable "manager" {
+  description = "The control plane for the NGINX instances. Options are: none, nim, controller."
+  default = "none"
+  validation {
+    condition = (
+      var.manager == "none" || var.manager == "nim" || var.manager == "controller"
+    )
+    error_message = "The manager option should be one of: none, nim, controller."
+  }
+}
+
 variable "clusters" {
   description = "The number of Kubernetes clusters to deploy (default=1, max=10)."
   default = 1
