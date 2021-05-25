@@ -22,12 +22,30 @@ variable "clusters" {
     condition = (
       var.clusters >= 0 && var.clusters <=10
     )
-    error_message = "Clusters must be between 1 and 10."
+    error_message = "Clusters must be between 0 and 10."
   }
 }
 
 variable "nginxs" {
   description = "The number of NGINX instances to deploy."
+  default = 1
+  validation {
+    condition = (
+      var.nginxs >= 0 && var.nginxs <=10
+    )
+    error_message = "NGINXs must be between 0 and 10."
+  }
+}
+
+variable "nims" {
+  description = "The number of NGINX Instance Managers to deploy."
+  default = 0
+  validation {
+    condition = (
+      var.nims >= 0 && var.nims <=10
+    )
+    error_message = "NIMs must be between 0 and 10."
+  }
 }
 
 variable "cluster_nodes" {
@@ -37,11 +55,19 @@ variable "cluster_nodes" {
     condition = (
       var.cluster_nodes >= 0 && var.cluster_nodes <=250
     )
-    error_message = "Nodes must be between 1 and 250."
+    error_message = "Nodes must be between 0 and 250."
   }
 }
+
 variable "controllers" {
-  description = "The number of Controllers to deploy."
+  description = "The number of NGINX Controllers to deploy."
+  default = 1
+  validation {
+    condition = (
+      var.controllers >= 0 && var.controllers <=10
+    )
+    error_message = "Clusters must be between 0 and 10."
+  }
 }
 
 variable "controller_size" {
@@ -52,6 +78,11 @@ variable "controller_size" {
 variable "nginx_size" {
   description = "The image size for the NGINX VMs"
   default = "Standard_DS1_v2"
+}
+
+variable "nim_size" {
+  description = "The image size for the NIM VMs"
+  default = "Standard_DS2_v2"
 }
 
 variable "pod_net_offset" {
@@ -69,6 +100,14 @@ variable "controller_image" {
 
 variable "controller_name" {
   description = "hostname for the controller"
+}
+
+variable "nim_image" {
+  description = "The NGINX Instance Manager image"
+}
+
+variable "nim_name" {
+  description = "hostname for the nim instance(s)"
 }
 
 variable "nginx_image" {
