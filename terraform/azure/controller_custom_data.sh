@@ -1,9 +1,5 @@
 #!/bin/bash
 
-fqdn="${hostname}.${domain}"
-[ "${internal_domain}" == "true" ] && fqdn="${hostname}.internal.cloudapp.net"
-export fqdn
-
 function put_license() {
   date +"%Y-%m-%d %H:%M:%S ========================================================="
   date +"%Y-%m-%d %H:%M:%S Putting Controller License"
@@ -30,7 +26,7 @@ function license_controller() {
       "credentials":{ 
         "type":"BASIC", 
         "username":"${controller_admin_user}", 
-        "password":"${controller_admin_pass}"
+        "password":"$${admin_pass}"
       }}' \
     https://$${fqdn}/api/v1/platform/login
 
@@ -78,6 +74,14 @@ function license_controller() {
   return $result
 }
 
+fqdn="${hostname}.${domain}"
+[ "${internal_domain}" == "true" ] && fqdn="${hostname}.internal.cloudapp.net"
+export fqdn
+
+admin_pass="${controller_admin_pass}"
+[ "${controller_admin_pass}" == "" ] && admin_pass="${controller_random_pass}"
+export admin_pass
+
 date +"%Y-%m-%d %H:%M:%S ========================================================="
 date +"%Y-%m-%d %H:%M:%S Ensure the Hostname is correct"
 
@@ -100,7 +104,7 @@ then
 else
   date +"%Y-%m-%d %H:%M:%S ========================================================="
   date +"%Y-%m-%d %H:%M:%S Install Needed - Installing Controller"
-  su - ${username} -c "/opt/nginx-install/controller_install.sh true \"$${fqdn}\" \"${controller_admin_user}\" \"${controller_admin_pass}\""
+  su - ${username} -c "/opt/nginx-install/controller_install.sh true \"$${fqdn}\" \"${controller_admin_user}\" \"$${admin_pass}\""
 fi
 
 # Give controller a couple of minutes to startup

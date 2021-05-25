@@ -14,7 +14,7 @@ resource "azurerm_resource_group" "resgroup" {
 data "azurerm_subscription" "current" {
 }
 
-resource "random_password" "password" {
+resource "random_password" "admin" {
   length = 20
   special = true
   override_special = "_%@"

@@ -85,29 +85,3 @@ resource "azurerm_kubernetes_cluster" "config" {
 
 }
 
-# outputs 
-
-output "k8s_id" {
-  value = azurerm_kubernetes_cluster.config[*].id
-}
-
-output "k8s_kube_config" {
-  value = azurerm_kubernetes_cluster.config[*].kube_config_raw
-  sensitive = true
-}
-
-output "k8s_client_key" {
-  value = azurerm_kubernetes_cluster.config[*].kube_config.0.client_key
-}
-
-output "k8s_client_certificate" {
-  value = azurerm_kubernetes_cluster.config[*].kube_config.0.client_certificate
-}
-
-output "k8s_cluster_ca_certificate" {
-  value = azurerm_kubernetes_cluster.config[*].kube_config.0.cluster_ca_certificate
-}
-
-output "k8s_host" {
-  value = azurerm_kubernetes_cluster.config[*].kube_config.0.host
-}

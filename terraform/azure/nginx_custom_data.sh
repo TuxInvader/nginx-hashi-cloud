@@ -34,8 +34,8 @@ function register_with_controller() {
     -d '{ 
       "credentials":{ 
         "type":"BASIC", 
-        "username":"${controller_admin_user}", 
-        "password":"${controller_admin_pass}"
+        "username":"${manager_admin_user}", 
+        "password":"$${admin_pass}"
       }}' \
     https://$${ctrl_fqdn}/api/v1/platform/login
 
@@ -144,6 +144,10 @@ then
 fi
 export ctrl_fqdn
 export nim_fqdn
+
+admin_pass="${manager_admin_pass}"
+[ "${manager_admin_pass}" == "" ] && admin_pass="${manager_random_pass}"
+export admin_pass
 
 date +"%Y-%m-%d %H:%M:%S Setting hostname"
 echo ${hostname} > /etc/hostname

@@ -61,7 +61,7 @@ variable "nims" {
 
 variable "cluster_nodes" {
   description = "The number of K8s nodes to deploy (default=1, max=250)"
-  default = 1
+  default = 2
   validation {
     condition = (
       var.cluster_nodes >= 0 && var.cluster_nodes <=250
@@ -72,7 +72,7 @@ variable "cluster_nodes" {
 
 variable "controllers" {
   description = "The number of NGINX Controllers to deploy."
-  default = 1
+  default = 0
   validation {
     condition = (
       var.controllers >= 0 && var.controllers <=10
@@ -151,14 +151,14 @@ variable "admin_ssh_key" {
   description = "The SSH key for the admin_user"
 }
 
-variable "controller_admin_user" {
-  description = "The admin user email address. Needed if Terrorform needs to install/license controller."
+variable "manager_admin_user" {
+  description = "The admin user email address. Needed if Terrorform needs to install/license Controller or NIM."
   default = "ChangeMeIfTerrorformIsInstallingController"
 }
 
-variable "controller_admin_pass" {
-  description = "The admin user password. Needed if Terrorform needs to install/license controller."
-  default = "ChangeMeIfTerrorformIsInstallingController"
+variable "manager_admin_pass" {
+  description = "The admin user password. Leave blank to autogenerate a password. If you installed controller during packer build, this needs to match the password used in packer."
+  default = ""
 }
 
 variable "controller_token" {

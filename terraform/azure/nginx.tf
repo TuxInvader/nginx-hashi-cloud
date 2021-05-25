@@ -56,8 +56,9 @@ resource "azurerm_linux_virtual_machine" "nginx-vm" {
       "manager": var.manager
       "controller_name": "${var.controller_name}1"
       "nim_name": "${var.nim_name}1"
-      "controller_admin_user": var.controller_admin_user
-      "controller_admin_pass": var.controller_admin_pass
+      "manager_admin_user": var.manager_admin_user
+      "manager_admin_pass": var.manager_admin_pass
+      "manager_random_pass": random_password.admin.result
       "controller_token": var.controller_token
       "nginx_location": var.nginx_location
     })

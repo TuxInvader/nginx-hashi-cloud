@@ -55,8 +55,9 @@ resource "azurerm_linux_virtual_machine" "ctrl-vm" {
       "internal_domain": var.use_internal_domain 
       "ipaddr": azurerm_network_interface.ctrl-mgmnt-nics[count.index].private_ip_address
       "username": var.admin_user
-      "controller_admin_user": var.controller_admin_user
-      "controller_admin_pass": var.controller_admin_pass
+      "controller_admin_user": var.manager_admin_user
+      "controller_admin_pass": var.manager_admin_pass
+      "controller_random_pass": random_password.admin.result
       "controller_token": var.controller_token
     })
   )
