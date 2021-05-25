@@ -9,6 +9,8 @@
     "nginx_ssl_crt": "/etc/ssl/nginx/nginx-repo.crt",
     "nim_config": "conf/nim_nginx_manager.conf",
     "nim_nginx_config": "conf/nim_nginx_plus.conf",
-    "nim_license": "~/nginx-manager-free-trial.lic"
+    "nim_license": "~/nginx-manager-free-trial.lic",
+    "admin_user":"admin",
+    "admin_pass":"Rubb1$h_p@55w0rd"
 }
 

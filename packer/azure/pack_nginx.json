@@ -45,6 +45,7 @@
       "curl https://cs.nginx.com/static/keys/nginx_signing.key | apt-key add",
       "curl https://cs.nginx.com/static/keys/app-protect-security-updates.key | apt-key add",
       "printf \"deb https://pkgs.nginx.com/plus/ubuntu `lsb_release -cs` nginx-plus\n\" > /etc/apt/sources.list.d/nginx-plus.list",
+      "printf \"deb https://pkgs.nginx.com/instance-manager/debian stable nginx-plus\n\" > /etc/apt/sources.list.d/instance-manager.list",
       "[ \"{{ user `app_protect` }}\" = \"yes\" ] && printf \"deb https://pkgs.nginx.com/app-protect/ubuntu `lsb_release -cs` nginx-plus\n\" > /etc/apt/sources.list.d/nap.list || true",
       "[ \"{{ user `app_protect` }}\" = \"yes\" ] && printf \"deb https://pkgs.nginx.com/app-protect-security-updates/ubuntu `lsb_release -cs` nginx-plus\n\" > /etc/apt/sources.list.d/nap-updates.list || true",
       "[ \"{{ user `mod_sec` }}\" = \"yes\" ] && printf \"deb https://pkgs.nginx.com/modsecurity/ubuntu `lsb_release -cs` nginx-plus\n\" > /etc/apt/sources.list.d/modsec.list || true",

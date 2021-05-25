@@ -70,7 +70,8 @@
       "mv /home/packer/nginx-manager-lb.conf /etc/nginx/conf.d/default.conf",
       "mv /home/packer/nginx-manager.lic /etc/nginx-manager/nginx-manager.lic",
       "htpasswd -c -b /etc/nginx/nim.passwd {{ user `admin_user` }} {{ user `admin_pass` }}",
-      "openssl req -new -x509 -extensions v3_req -out /etc/nginx-manager/nginx-manager.crt -newkey rsa:2048 -keyout /etc/nginx-manager/nginx-manager.key -nodes -days 365 -addext \"subjectAltName = DNS.0:nim.nginx.demo\" -subj \"/C=GB/ST=London/L=London/O=NGINX Inc/CN=nim.nginx.demo\""
+      "openssl req -new -x509 -extensions v3_req -out /etc/nginx-manager/nginx-manager.crt -newkey rsa:2048 -keyout /etc/nginx-manager/nginx-manager.key -nodes -days 365 -addext \"subjectAltName = DNS.0:nim.nginx.demo\" -subj \"/C=GB/ST=London/L=London/O=NGINX Inc/CN=nim.nginx.demo\"",
+      "systemctl enable nginx-manager.service"
     ],
     "inline_shebang": "/bin/sh -x",
     "type": "shell"
