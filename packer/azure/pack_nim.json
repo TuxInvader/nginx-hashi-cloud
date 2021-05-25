@@ -63,7 +63,7 @@
       "printf \"deb https://pkgs.nginx.com/instance-manager/debian stable nginx-plus\n\" > /etc/apt/sources.list.d/instance-manager.list",
       "wget -q -O /etc/apt/apt.conf.d/90pkgs-nginx https://cs.nginx.com/static/files/90pkgs-nginx",
       "apt-get update",
-      "apt-get upgrade -y",
+      "apt-get dist-upgrade -y",
       "apt-get install -y gawk bash conntrack coreutils curl ebtables gettext ethtool libc-bin grep gzip iproute2 iptables jq less openssl sed socat tar util-linux apache2-utils",
       "apt-get install -y nginx-plus nginx-manager",
       "mv /home/packer/nginx-manager.conf /etc/nginx-manager/",

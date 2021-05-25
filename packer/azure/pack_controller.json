@@ -39,7 +39,7 @@
     "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
     "inline": [
       "apt-get update",
-      "apt-get upgrade -y",
+      "apt-get dist-upgrade -y",
       "apt-get install -y gawk bash conntrack coreutils curl ebtables gettext ethtool libc-bin grep gzip iproute2 iptables jq less openssl sed socat tar util-linux",
       "chmod +x /opt/nginx-install/controller_install.sh"
     ],

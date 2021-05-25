@@ -51,7 +51,7 @@
       "[ \"{{ user `mod_sec` }}\" = \"yes\" ] && printf \"deb https://pkgs.nginx.com/modsecurity/ubuntu `lsb_release -cs` nginx-plus\n\" > /etc/apt/sources.list.d/modsec.list || true",
       "wget -q -O /etc/apt/apt.conf.d/90pkgs-nginx https://cs.nginx.com/static/files/90pkgs-nginx",
       "apt-get update",
-      "apt-get upgrade -y",
+      "apt-get dist-upgrade -y",
       "apt-get install -y gawk bash conntrack coreutils curl ebtables gettext ethtool libc-bin grep gzip iproute2 iptables jq less openssl sed socat tar util-linux",
       "apt-get install -y nginx-plus {{ user `nginx_modules` }}",
       "[ \"{{ user `app_protect` }}\" = \"yes\" ] && apt-get install -y app-protect app-protect-attack-signatures || true",
