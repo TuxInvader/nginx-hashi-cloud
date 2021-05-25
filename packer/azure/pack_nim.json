@@ -1,5 +1,5 @@
 {
-  "description" : "Create an image for NGINX Controller",
+  "description" : "Create an image for NGINX Instance Manager",
 
   "builders": [{
     "type": "azure-arm",
