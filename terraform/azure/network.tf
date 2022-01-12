@@ -23,7 +23,7 @@ resource "azurerm_network_security_rule" "ssh" {
   destination_port_range = "22"
   destination_port_ranges = null
   source_address_prefix = null
-  source_address_prefixes = var.fw_ssh_prefixes
+  source_address_prefixes = concat( compact(var.fw_ssh_prefixes), [data.http.ip_address.body] )
   source_application_security_group_ids = null
   source_port_range = "*"
   source_port_ranges = null
