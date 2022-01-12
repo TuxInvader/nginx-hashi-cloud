@@ -5,13 +5,8 @@ function register_with_nim() {
   date +"%Y-%m-%d %H:%M:%S ==================== REGISTER ==========================="
   date +"%Y-%m-%d %H:%M:%S ========================================================="
   date +"%Y-%m-%d %H:%M:%S Install NGINX Agent..."
-  apt-get install -y nginx-agent
-  echo "c2VydmVyOiBOSU1fU0VSVkVSX1NPQ0tFVAp0bHM6CiAgZW5hYmxlOiBmYWxzZQpsb2c6CiAgbGV2 \
-        ZWw6IGluZm8KICBwYXRoOiAvdmFyL2xvZy9uZ2lueC1hZ2VudC8KbWV0YWRhdGE6CiAgbG9jYXRp \
-        b246IHVuc3BlY2lmaWVkCnRhZ3M6CiAgLSB3ZWIKbmdpbng6CiAgYmluX3BhdGg6IC91c3Ivc2Jp \
-        bi9uZ2lueAogIHBsdXNfYXBpX3VybDogImh0dHA6Ly8xMjcuMC4wLjE6ODA4MC9hcGkiCiAgbWV0 \
-        cmljc19wb2xsX2ludGVydmFsOiAxMDAwbXMK" | sed -re 's/\s+//g' | base64 -d | \
-        sed -re "s/NIM_SERVER_SOCKET/${nim_name}.internal.cloudapp.net:10001/" > /etc/nginx-agent/nginx-agent.conf
+
+  curl -k https://${nim_name}.internal.cloudapp.net/install/nginx-agent | sh
 
   date +"%Y-%m-%d %H:%M:%S Enabling API on localhost:8080"
   echo "c2VydmVyIHsKICBsaXN0ZW4gODA4MCBkZWZhdWx0OwogIGxvY2F0aW9uIC8geyByZXR1cm4gNDA0 \
