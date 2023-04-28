@@ -7,3 +7,4 @@ terraform.tfstate.backup
 *.swp
 *.lock
 *.pem
+.DS_Store

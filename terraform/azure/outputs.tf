@@ -6,6 +6,7 @@ output "k8s_id" {
 
 output "k8s_host" {
   value = azurerm_kubernetes_cluster.config[*].kube_config.0.host
+  sensitive = true
 }
 
 output "nginx_public_ips" {

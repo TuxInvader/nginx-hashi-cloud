@@ -55,6 +55,7 @@ resource "azurerm_linux_virtual_machine" "nim-vm" {
       "username": var.admin_user
       "manager_admin_user": var.manager_admin_user
       "manager_admin_pass": var.manager_admin_pass
+      "manager_other_pass": var.manager_other_pass
       "manager_random_pass": random_password.admin.result
     })
   )

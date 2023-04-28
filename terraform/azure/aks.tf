@@ -38,24 +38,31 @@ resource "azurerm_subnet_route_table_association" "container-routes-assoc" {
 }
 
 resource "azurerm_kubernetes_cluster" "config" {
-  count               = var.clusters
-  name                = "${var.prefix}-k8s-${count.index}"
-  location            = azurerm_resource_group.resgroup.location
-  resource_group_name = azurerm_resource_group.resgroup.name
-  dns_prefix          = "${var.prefix}-k8s-${count.index}"
-  kubernetes_version  = "1.20.9"
-  
+  count                              = var.clusters
+  name                               = "${var.prefix}-k8s-${count.index}"
+  location                           = azurerm_resource_group.resgroup.location
+  resource_group_name                = azurerm_resource_group.resgroup.name
+  dns_prefix                         = "${var.prefix}-k8s-${count.index}"
+  kubernetes_version                 = var.k8s_version
+  role_based_access_control_enabled  = true
+
+  identity {
+     type            = "UserAssigned"
+     identity_ids    = [
+        azurerm_user_assigned_identity.identity.id
+     ]
+  }
+
   default_node_pool {
-    name       = "default"
-    node_count = var.cluster_nodes
-    vm_size    = "Standard_DS2_v2"
+    name           = "default"
+    node_count     = var.cluster_nodes
+    vm_size        = "Standard_DS2_v2"
     vnet_subnet_id = azurerm_subnet.k8s-subnet[count.index].id
   }
 
-  identity {
-    type = "UserAssigned"
-    user_assigned_identity_id = azurerm_user_assigned_identity.identity.id
-  }
+  depends_on                         = [
+    azurerm_role_assignment.network-contrib-assignment
+  ]
 
   network_profile {
     network_plugin = "kubenet"
@@ -63,24 +70,6 @@ resource "azurerm_kubernetes_cluster" "config" {
     service_cidr = "10.${format("%02d", count.index + var.pod_net_offset)}.128.0/17"
     docker_bridge_cidr = "172.17.0.1/16"
     dns_service_ip = "10.${format("%02d", count.index + var.pod_net_offset)}.128.10"
-  }
-
-  addon_profile {
-    aci_connector_linux {
-      enabled = false
-    }
-
-    azure_policy {
-      enabled = false
-    }
-
-    http_application_routing {
-      enabled = false
-    }
-
-    oms_agent {
-      enabled = false
-    }
   }
 
 }

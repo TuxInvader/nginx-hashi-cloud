@@ -2,22 +2,8 @@ variable "prefix" {
   description = "A prefix used for all resources in this example"
 }
 
-variable "location" {
-  description = "The Azure Region in which all resources in this example should be provisioned"
-}
-
-variable "use_internal_domain" {
-  description = "Use the internal cloudapp domain (internal.cloudapp.net) if true or the public domain (<region>.cloudapp.azure.com) if false"
-  default = false
-  validation {
-    condition = can( tobool(var.use_internal_domain) )
-    error_message = "Value should be 'true' or 'false'."
-  }
-}
-
-variable "k8s_version" {
-  description = "Which version of kubernetes to deploy"
-  default = "1.20.9"
+variable "region" {
+  description = "The AWS Region in which all resources in this example should be provisioned"
 }
 
 variable "manager" {
@@ -162,12 +148,7 @@ variable "manager_admin_user" {
 }
 
 variable "manager_admin_pass" {
-  description = "The admin user password. Leave blank to autogenerate a password."
-  default = ""
-}
-
-variable "manager_other_pass" {
-  description = "The other user password. Leave blank to autogenerate a password."
+  description = "The admin user password. Leave blank to autogenerate a password. If you installed controller during packer build, this needs to match the password used in packer."
   default = ""
 }
 
@@ -175,9 +156,3 @@ variable "controller_token" {
   description = "Your controller assosciation token or base64 encoded license file. If provided the controller will be licensed at startup"
   default = ""
 }
-
-variable "enable_test_repo" {
-  description = "Enable the test repo?"
-  default = false
-}
-

@@ -3,6 +3,7 @@
 
   "builders": [{
     "type": "azure-arm",
+    "use_interactive_auth": true,
     "subscription_id": "{{ user `subscription` }}",
     "temp_compute_name": "{{user `ctrl_host`}}",
     "managed_image_resource_group_name": "{{ user `buildRG` }}",

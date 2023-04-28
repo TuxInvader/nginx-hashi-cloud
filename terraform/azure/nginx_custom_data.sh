@@ -6,7 +6,53 @@ function register_with_nim() {
   date +"%Y-%m-%d %H:%M:%S ========================================================="
   date +"%Y-%m-%d %H:%M:%S Install NGINX Agent..."
 
-  curl -k https://${nim_name}.internal.cloudapp.net/install/nginx-agent | sh
+  result=1
+  completed=0
+  attempts=0
+  agent_install=$( mktemp /tmp/agent_install.XXXXXXXX )
+
+  while [ $completed -eq 0 ]
+  do
+    date +"%Y-%m-%d %H:%M:%S Downloading installer to: $${agent_install}"
+    curl -k -s --connect-timeout 5 -o $${agent_install} https://$${nim_fqdn}/install/nginx-agent
+    if [ $? -eq 0 ]
+    then
+      date +"%Y-%m-%d %H:%M:%S Download SUCCESS"
+      date +"%Y-%m-%d %H:%M:%S Executing install"
+      chmod 755 $${agent_install}
+      sudo sh $${agent_install}
+      if [ $? -eq 0 ]
+      then
+        date +"%Y-%m-%d %H:%M:%S Install Complete"
+        date +"%Y-%m-%d %H:%M:%S ========================================================="
+        date +"%Y-%m-%d %H:%M:%S NIM Registration SUCCESS"
+        completed=1
+        result=0
+      else
+        date +"%Y-%m-%d %H:%M:%S Install Failed"
+        date +"%Y-%m-%d %H:%M:%S ========================================================="
+        result=1
+        attempts=$(( $attempts + 1 ))
+        sleep 10
+      fi
+    elif [ $attempts -gt 3 ]
+    then
+      date +"%Y-%m-%d %H:%M:%S ========================================================="
+      date +"%Y-%m-%d %H:%M:%S NIM Registration FAILED"
+      completed=1
+      result=1
+    else
+      date +"%Y-%m-%d %H:%M:%S Download FAILED - Attempt $attempts"
+      date +"%Y-%m-%d %H:%M:%S ========================================================="
+      attempts=$(( $attempts + 1 ))
+      sleep 10
+    fi
+  done
+  rm $${agent_install}
+  return $result;
+}
+
+function setup_nim_nginx_config() {
 
   date +"%Y-%m-%d %H:%M:%S Enabling API on localhost:8080"
   echo "c2VydmVyIHsKICBsaXN0ZW4gODA4MCBkZWZhdWx0OwogIGxvY2F0aW9uIC8geyByZXR1cm4gNDA0 \
@@ -172,6 +218,7 @@ then
     date +"%Y-%m-%d %H:%M:%S ========================================================="
     sleep 10
   done
+  setup_nim_nginx_config
 fi
 
 date +"%Y-%m-%d %H:%M:%S ========================================================="
